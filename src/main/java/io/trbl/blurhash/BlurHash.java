@@ -1,6 +1,8 @@
 package io.trbl.blurhash;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 
 import static io.trbl.blurhash.Utils.*;
 
@@ -16,8 +18,8 @@ public final class BlurHash {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 double basis = normalisation
-                               * Math.cos((Math.PI * i * x) / width)
-                               * Math.cos((Math.PI * j * y) / height);
+                        * Math.cos((Math.PI * i * x) / width)
+                        * Math.cos((Math.PI * j * y) / height);
                 int pixel = pixels[y * width + x];
                 r += basis * sRGBToLinear((pixel >> 16) & 0xff);
                 g += basis * sRGBToLinear((pixel >> 8)  & 0xff);
@@ -64,8 +66,21 @@ public final class BlurHash {
     public static String encode(BufferedImage bufferedImage, int componentX, int componentY) {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
-        int[] pixels = bufferedImage.getRGB(0, 0, width, height, null, 0, width);
+        int[] pixels = getRGBArrayFromImage(bufferedImage);
         return encode(pixels, width, height, componentX, componentY);
+    }
+
+    private static int[] getRGBArrayFromImage(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[] pixels = new int[width * height];
+        image.getRGB(0, 0, width, height, pixels, 0, width);
+        return pixels;
+    }
+
+    public static BufferedImage decodeWebPImage(byte[] webpData) throws Exception {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(webpData);
+        return ImageIO.read(inputStream);
     }
 
     /**
