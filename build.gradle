@@ -9,6 +9,7 @@ repositories {
 }
 
 dependencies {
+    implementation "com.twelvemonkeys.imageio:imageio-webp:3.11.0"
     testImplementation "junit:junit:4.12"
 }
 
